@@ -19,6 +19,10 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3333;
-app.listen(PORT, () => {
+app.listen(PORT, (err) => {
+  if (err) {
+    console.error(`❌ Não foi possível iniciar na porta ${PORT}:`, err.message);
+    process.exit(1);
+  }
   console.log(`🚀 API rodando em http://localhost:${PORT}`);
 });
