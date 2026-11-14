@@ -1,7 +1,25 @@
+import { Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import Home from "./pages/Home";
+import Catalog from "./pages/Catalog";
+import Product from "./pages/Product";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Success from "./pages/Success";
+import NotFound from "./pages/NotFound";
+
 export default function App() {
   return (
-    <div className="min-h-screen bg-neutral-950 text-amber-100 flex items-center justify-center">
-      <h1 className="text-4xl font-serif tracking-wide">Joalheria ✨</h1>
-    </div>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/catalogo" element={<Catalog />} />
+        <Route path="/produto/:slug" element={<Product />} />
+        <Route path="/carrinho" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/pedido/:id" element={<Success />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
   );
 }
