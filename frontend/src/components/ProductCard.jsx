@@ -1,17 +1,33 @@
+import { useRef } from "react";
 import { useCart } from "../context/CartContext";
 import { useProductModal } from "../context/ProductModalContext";
-import { formatPrice } from "../lib/format";
+import { formatPrice, installments } from "../lib/format";
 
 export default function ProductCard({ product }) {
   const { add } = useCart();
   const { openProduct } = useProductModal();
-  const [main, alt] = product.images;
+  const imgRef = useRef(null);
   const variants = product.variants ?? [];
   const single = variants.length === 1;
 
+  // O zoom acompanha o mouse: a foto cresce a partir do ponto onde ele está.
+  function follow(e) {
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width) * 100;
+    const y = ((e.clientY - r.top) / r.height) * 100;
+    if (imgRef.current) imgRef.current.style.transformOrigin = `${x}% ${y}%`;
+  }
+  function reset() {
+    if (imgRef.current) imgRef.current.style.transformOrigin = "50% 50%";
+  }
+
   return (
     <article className="group">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-stone">
+      <div
+        onMouseMove={follow}
+        onMouseLeave={reset}
+        className="group/img relative aspect-[4/5] overflow-hidden rounded-md bg-stone"
+      >
         <button
           type="button"
           onClick={() => openProduct(product)}
@@ -19,19 +35,12 @@ export default function ProductCard({ product }) {
           className="absolute inset-0 block"
         >
           <img
-            src={main}
+            ref={imgRef}
+            src={product.images[0]}
             alt=""
             loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            className="h-full w-full object-cover transition-[transform,transform-origin] duration-500 ease-out group-hover/img:scale-[1.06]"
           />
-          {alt && (
-            <img
-              src={alt}
-              alt=""
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover opacity-0 transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-100"
-            />
-          )}
         </button>
 
         <div className="absolute inset-x-0 bottom-0 z-10 translate-y-full bg-paper/95 p-3 backdrop-blur transition-transform duration-300 group-focus-within:translate-y-0 group-hover:translate-y-0 pointer-coarse:translate-y-0">
@@ -71,6 +80,7 @@ export default function ProductCard({ product }) {
         </h3>
         <p className="mt-1 text-sm text-ink/60">{product.material}</p>
         <p className="mt-2 font-medium text-ink">{formatPrice(product.price)}</p>
+        <p className="text-xs text-ink/50">{installments(product.price)}</p>
       </button>
     </article>
   );

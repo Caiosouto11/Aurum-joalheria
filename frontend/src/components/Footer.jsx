@@ -5,7 +5,7 @@ export default function Footer() {
       <p className="mt-2 text-sm text-ink/60">
         Loja fictícia criada para portfólio. Nenhuma compra é real.
       </p>
-      <p className="mt-1 text-xs text-ink/40">Fotos: Unsplash.</p>
+      <p className="mt-4 text-sm text-ink/70">Desenvolvido por Caio Souto</p>
     </footer>
   );
 }

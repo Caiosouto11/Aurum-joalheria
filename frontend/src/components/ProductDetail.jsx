@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
-import { formatPrice } from "../lib/format";
+import { formatPrice, installments } from "../lib/format";
 
 export default function ProductDetail({ product, onAdded }) {
   const { add } = useCart();
@@ -52,6 +52,7 @@ export default function ProductDetail({ product, onAdded }) {
         <h2 className="mt-1 font-serif text-5xl leading-none">{product.name}</h2>
         <p className="mt-3 text-sm text-ink/60">{product.material}</p>
         <p className="mt-5 text-2xl font-medium">{formatPrice(product.price)}</p>
+        <p className="text-sm text-ink/60">{installments(product.price)}</p>
 
         <p className="mt-6 max-w-prose leading-relaxed text-ink/80">{product.description}</p>
 

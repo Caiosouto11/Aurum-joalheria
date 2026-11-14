@@ -99,7 +99,7 @@ async function main() {
         price,
         material,
         featured,
-        images: [photo(pool[n % pool.length]), photo(pool[(n + 1) % pool.length])],
+        images: [photo(pool[n % pool.length])],
         categoryId: catIds[cat],
         variants: {
           create: sizes.map((label) => ({

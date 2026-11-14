@@ -13,6 +13,7 @@ export default function Home() {
   const [status, setStatus] = useState("loading");
   const [active, setActive] = useState("Todas");
   const track = useRef(null);
+  const [edges, setEdges] = useState({ start: true, end: false });
 
   useEffect(() => {
     api.get("/products").then((res) => {
@@ -31,6 +32,21 @@ export default function Home() {
   }
 
   const scroll = (dir) => track.current?.scrollBy({ left: dir * 364, behavior: "smooth" });
+
+  function updateEdges() {
+    const el = track.current;
+    if (!el) return;
+    setEdges({
+      start: el.scrollLeft < 8,
+      end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 8,
+    });
+  }
+
+  useEffect(() => {
+    updateEdges();
+    window.addEventListener("resize", updateEdges);
+    return () => window.removeEventListener("resize", updateEdges);
+  }, [status, active]);
 
   return (
     <>
@@ -81,10 +97,6 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="flex gap-2">
-            <button type="button" onClick={() => scroll(-1)} aria-label="Anterior" className="h-11 w-11 rounded-full border border-ink/20 text-lg transition-colors hover:bg-ink hover:text-paper">←</button>
-            <button type="button" onClick={() => scroll(1)} aria-label="Próximo" className="h-11 w-11 rounded-full border border-ink/20 text-lg transition-colors hover:bg-ink hover:text-paper">→</button>
-          </div>
         </div>
 
         {status === "loading" && <p className="mx-auto mt-10 max-w-6xl px-4 text-ink/60">Carregando joias...</p>}
@@ -95,15 +107,39 @@ export default function Home() {
         )}
 
         {status === "ready" && (
-          <div
-            ref={track}
-            className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-2 md:px-[max(1rem,calc((100vw-72rem)/2+1rem))]"
-          >
-            {visible.map((p) => (
-              <div key={p.id} className="w-[min(340px,78vw)] shrink-0 snap-start">
-                <ProductCard product={p} />
-              </div>
-            ))}
+          <div className="relative mt-10">
+            <button
+              type="button"
+              onClick={() => scroll(-1)}
+              aria-label="Peças anteriores"
+              className={`absolute left-3 top-[40%] z-10 hidden h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-paper text-ink shadow-lg ring-1 ring-ink/10 transition-all hover:bg-ink hover:text-paper md:grid ${
+                edges.start ? "pointer-events-none opacity-0" : ""
+              }`}
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m15 5-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => scroll(1)}
+              aria-label="Próximas peças"
+              className={`absolute right-3 top-[40%] z-10 hidden h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-paper text-ink shadow-lg ring-1 ring-ink/10 transition-all hover:bg-ink hover:text-paper md:grid ${
+                edges.end ? "pointer-events-none opacity-0" : ""
+              }`}
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m9 5 7 7-7 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+
+            <div
+              ref={track}
+              onScroll={updateEdges}
+              className="no-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-2 md:px-[max(1rem,calc((100vw-72rem)/2+1rem))]"
+            >
+              {visible.map((p) => (
+                <div key={p.id} className="w-[min(340px,78vw)] shrink-0 snap-start">
+                  <ProductCard product={p} />
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </section>
