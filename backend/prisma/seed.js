@@ -2,8 +2,37 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const img = (text) =>
-  `https://placehold.co/800x800/171717/d4af37?text=${encodeURIComponent(text)}`;
+// Fotos do Unsplash (uso livre). Ordem = ordem dos produtos de cada categoria.
+const photo = (id) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=800&h=1000&q=80`;
+
+const PHOTOS = {
+  aneis: [
+    "1611955167811-4711904bb9f8",
+    "1622398925373-3f91b1e275f5",
+    "1598560917807-1bae44bd2be8",
+    "1631982690223-8aa4be0a2497",
+  ],
+  colares: [
+    "1611107683227-e9060eccd846",
+    "1744369382892-eb5b6a2fdc6f",
+    "1506630448388-4e683c67ddb0",
+    "1588444968576-f8fe92ce56fd",
+  ],
+  brincos: [
+    "1701777892740-88419a701472",
+    "1653227907864-560dce4c252d",
+    "1671644730555-916aa8d8157f",
+    "1758995115857-2de1eb6283d0",
+  ],
+  pulseiras: [
+    "1639065643006-e217c4fee12e",
+    "1619119069152-a2b331eb392a",
+    "1626122738142-bbd66f671eca",
+    "1668365179846-3333fe14f552",
+  ],
+};
+const counters = {};
 
 const aros = ["Aro 12", "Aro 14", "Aro 16", "Aro 18", "Aro 20"];
 const correntes = ["40 cm", "45 cm", "50 cm", "60 cm"];
@@ -60,6 +89,8 @@ async function main() {
   }
 
   for (const [cat, name, price, material, featured, sizes, description] of products) {
+    const n = (counters[cat] = (counters[cat] ?? -1) + 1);
+    const pool = PHOTOS[cat];
     await prisma.product.create({
       data: {
         name,
@@ -68,7 +99,7 @@ async function main() {
         price,
         material,
         featured,
-        images: [img(name), img(`${name} 2`), img(`${name} 3`)],
+        images: [photo(pool[n % pool.length]), photo(pool[(n + 1) % pool.length])],
         categoryId: catIds[cat],
         variants: {
           create: sizes.map((label) => ({

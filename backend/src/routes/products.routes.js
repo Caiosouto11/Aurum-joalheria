@@ -6,5 +6,6 @@ const router = Router();
 router.get("/products", controller.index);
 router.get("/products/:slug", controller.show);
 router.get("/categories", controller.categories);
+router.get("/combos", controller.combos);
 
 export default router;

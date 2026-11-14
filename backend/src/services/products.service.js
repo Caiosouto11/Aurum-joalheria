@@ -36,7 +36,7 @@ export async function listProducts({ category, material, min, max, q, sort, feat
   const products = await prisma.product.findMany({
     where,
     orderBy: SORTS[sort] ?? SORTS.newest,
-    include: { category: true },
+    include: { category: true, variants: { orderBy: { id: "asc" } } },
   });
 
   return products.map(formatProduct);

@@ -1,4 +1,5 @@
 import * as productsService from "../services/products.service.js";
+import { listCombos } from "../services/combos.service.js";
 
 const parseNumber = (value) => {
   if (value === undefined || value === "") return undefined;
@@ -34,4 +35,8 @@ export async function show(req, res) {
 
 export async function categories(req, res) {
   res.json(await productsService.listCategories());
+}
+
+export async function combos(req, res) {
+  res.json(await listCombos());
 }
